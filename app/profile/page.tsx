@@ -514,7 +514,7 @@ export default function ProfilePage() {
                           Account Created
                         </p>
                         <p className="font-medium">
-                          {new Date(user.createdAt).toLocaleDateString()}
+                          {new Date(user?.createdAt || "").toLocaleDateString()}
                         </p>
                       </div>
                     </div>
