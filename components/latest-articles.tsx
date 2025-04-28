@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ const articles = [
     date: "Apr 15, 2025",
     readTime: "5 min read",
     image:
-      "https://images.pexels.com/photos/7656532/pexels-photo-7656532.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-42an9fU4ete0WZkRXjL5fGsVzh80ihYqqg&s",
     category: "Health",
   },
   {
@@ -79,10 +80,11 @@ const LatestArticles = () => {
             >
               <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src={article.image}
                     alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-500 hover:scale-105"
                   />
                   <div className="absolute top-4 left-4">
                     <span className="bg-rose-600 text-white text-xs font-semibold px-2 py-1 rounded">

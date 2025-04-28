@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart,
   Users,
@@ -31,8 +32,8 @@ export default function AboutPage() {
           About <span className="text-rose-600">LifeLink</span>
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          We're on a mission to create a world where no one dies waiting for
-          blood. Every donation matters, every donor is a hero.
+          We&apos;re on a mission to create a world where no one dies waiting
+          for blood. Every donation matters, every donor is a hero.
         </p>
       </div>
 
@@ -59,11 +60,12 @@ export default function AboutPage() {
               lifeline for patients with rare blood types or emergency needs.
             </p>
           </div>
-          <div className="rounded-xl overflow-hidden shadow-lg">
-            <img
+          <div className="rounded-xl overflow-hidden shadow-lg relative h-80">
+            <Image
               src="https://images.pexels.com/photos/6823559/pexels-photo-6823559.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
               alt="LifeLink team"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
         </div>
@@ -138,7 +140,8 @@ export default function AboutPage() {
             </h3>
             <p className="text-gray-600">
               We uphold the highest standards in everything we do, from our
-              platform's security to the quality of donor-recipient matches.
+              platform&apos;s security to the quality of donor-recipient
+              matches.
             </p>
           </div>
 
@@ -150,8 +153,9 @@ export default function AboutPage() {
               Accessibility
             </h3>
             <p className="text-gray-600">
-              We're committed to making blood donation accessible to everyone,
-              breaking down barriers of distance, information, and opportunity.
+              We&apos;re committed to making blood donation accessible to
+              everyone, breaking down barriers of distance, information, and
+              opportunity.
             </p>
           </div>
         </div>
@@ -251,8 +255,8 @@ export default function AboutPage() {
           Join Our Mission
         </h2>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-          Whether you're a donor, medical professional, or supporter, there's a
-          place for you in the LifeLink community.
+          Whether you&apos;re a donor, medical professional, or supporter,
+          there&apos;s a place for you in the LifeLink community.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -41,7 +42,7 @@ const articles = [
     publishDate: "2025-04-15",
     readTime: "5 min read",
     image:
-      "https://images.pexels.com/photos/7656532/pexels-photo-7656532.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-42an9fU4ete0WZkRXjL5fGsVzh80ihYqqg&s",
     category: "Health",
     tags: ["health benefits", "heart health", "blood donation"],
   },
@@ -314,7 +315,8 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
       <div className="container mx-auto px-4 py-12 text-center">
         <h1 className="text-2xl font-bold mb-4">Article Not Found</h1>
         <p className="mb-6">
-          The article you're looking for doesn't exist or has been removed.
+          The article you&apos;re looking for doesn&apos;t exist or has been
+          removed.
         </p>
         <Button asChild>
           <Link href="/articles">Back to Articles</Link>
@@ -360,10 +362,12 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
           </h1>
 
           <div className="relative h-80 mb-8 rounded-xl overflow-hidden">
-            <img
+            <Image
               src={article.image}
               alt={article.title}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
+              priority
             />
           </div>
 
@@ -393,10 +397,11 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
               {relatedArticles.map((relatedArticle) => (
                 <Card key={relatedArticle.id} className="overflow-hidden">
                   <div className="h-40 relative">
-                    <img
+                    <Image
                       src={relatedArticle.image}
                       alt={relatedArticle.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                     <div className="absolute top-2 left-2">
                       <Badge>{relatedArticle.category}</Badge>

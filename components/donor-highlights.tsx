@@ -1,52 +1,53 @@
 "use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Star,
-  Award
-} from 'lucide-react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChevronLeft, ChevronRight, Star, Award } from "lucide-react";
 
 const donors = [
   {
     name: "Sarah Johnson",
     bloodType: "O+",
     donations: 12,
-    image: "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=600",
-    highlight: "Donates regularly every 3 months for the past 3 years."
+    image:
+      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=600",
+    highlight: "Donates regularly every 3 months for the past 3 years.",
   },
   {
     name: "Michael Chen",
     bloodType: "AB-",
     donations: 8,
-    image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=600",
-    highlight: "Rare blood type donor who travels 30 miles to donate."
+    image:
+      "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=600",
+    highlight: "Rare blood type donor who travels 30 miles to donate.",
   },
   {
     name: "Jessica Williams",
     bloodType: "A+",
     donations: 20,
-    image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600",
-    highlight: "Started a donation drive at her workplace that collected 50+ units."
+    image:
+      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600",
+    highlight:
+      "Started a donation drive at her workplace that collected 50+ units.",
   },
   {
     name: "Robert Garcia",
     bloodType: "O-",
     donations: 15,
-    image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-    highlight: "Universal donor who's helped in 5 emergency situations."
+    image:
+      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    highlight: "Universal donor who's helped in 5 emergency situations.",
   },
   {
     name: "Emily Wilson",
     bloodType: "B+",
     donations: 10,
-    image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=600",
-    highlight: "Overcame her fear of needles to become a regular donor."
-  }
+    image:
+      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=600",
+    highlight: "Overcame her fear of needles to become a regular donor.",
+  },
 ];
 
 const DonorHighlights = () => {
@@ -66,16 +67,16 @@ const DonorHighlights = () => {
   const variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 200 : -200,
-      opacity: 0
+      opacity: 0,
     }),
     center: {
       x: 0,
-      opacity: 1
+      opacity: 1,
     },
     exit: (direction: number) => ({
       x: direction > 0 ? -200 : 200,
-      opacity: 0
-    })
+      opacity: 0,
+    }),
   };
 
   return (
@@ -86,21 +87,21 @@ const DonorHighlights = () => {
             <span className="text-rose-600">Hero</span> Donors
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Meet our exceptional donors who are making a difference in their communities 
-            through their generous blood donations.
+            Meet our exceptional donors who are making a difference in their
+            communities through their generous blood donations.
           </p>
         </div>
-        
+
         <div className="max-w-5xl mx-auto relative">
           <div className="absolute top-1/2 left-4 md:left-0 transform -translate-y-1/2 z-10">
-            <button 
+            <button
               onClick={prevDonor}
               className="bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors"
             >
               <ChevronLeft className="h-6 w-6 text-gray-600" />
             </button>
           </div>
-          
+
           <div className="min-h-[400px] flex items-center justify-center">
             <motion.div
               key={activeIndex}
@@ -116,8 +117,13 @@ const DonorHighlights = () => {
                 <div className="w-full md:w-1/3 flex flex-col items-center">
                   <div className="relative">
                     <Avatar className="h-32 w-32 border-4 border-rose-100">
-                      <AvatarImage src={donors[activeIndex].image} alt={donors[activeIndex].name} />
-                      <AvatarFallback>{donors[activeIndex].name.charAt(0)}</AvatarFallback>
+                      <AvatarImage
+                        src={donors[activeIndex].image}
+                        alt={donors[activeIndex].name}
+                      />
+                      <AvatarFallback>
+                        {donors[activeIndex].name.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-2 -right-2">
                       <div className="bg-rose-600 text-white rounded-full p-1">
@@ -125,11 +131,16 @@ const DonorHighlights = () => {
                       </div>
                     </div>
                   </div>
-                  
-                  <h3 className="text-xl font-bold mt-4 text-gray-900">{donors[activeIndex].name}</h3>
-                  
+
+                  <h3 className="text-xl font-bold mt-4 text-gray-900">
+                    {donors[activeIndex].name}
+                  </h3>
+
                   <div className="flex items-center justify-center gap-4 mt-2">
-                    <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-semibold">
+                    <Badge
+                      variant="outline"
+                      className="bg-rose-50 text-rose-700 border-rose-200 font-semibold"
+                    >
                       {donors[activeIndex].bloodType}
                     </Badge>
                     <div className="flex items-center text-sm text-gray-600">
@@ -138,42 +149,46 @@ const DonorHighlights = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="w-full md:w-2/3 mt-6 md:mt-0">
                   <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 relative">
                     <div className="absolute -top-3 -left-3">
-                      <div className="text-5xl text-rose-200">"</div>
+                      <div className="text-5xl text-rose-200">&quot;</div>
                     </div>
                     <p className="text-lg text-gray-700 relative z-10 pt-4">
                       {donors[activeIndex].highlight}
                     </p>
                     <div className="absolute -bottom-3 -right-3 transform rotate-180">
-                      <div className="text-5xl text-rose-200">"</div>
+                      <div className="text-5xl text-rose-200">&quot;</div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6 bg-rose-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-gray-900 mb-2">Impact:</h4>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Impact:
+                    </h4>
                     <p className="text-gray-700">
-                      With {donors[activeIndex].donations} donations, {donors[activeIndex].name} has 
-                      potentially saved up to {donors[activeIndex].donations * 3} lives and contributed 
-                      approximately {donors[activeIndex].donations * 450}ml of blood to help those in need.
+                      With {donors[activeIndex].donations} donations,{" "}
+                      {donors[activeIndex].name} has potentially saved up to{" "}
+                      {donors[activeIndex].donations * 3} lives and contributed
+                      approximately {donors[activeIndex].donations * 450}ml of
+                      blood to help those in need.
                     </p>
                   </div>
                 </div>
               </div>
             </motion.div>
           </div>
-          
+
           <div className="absolute top-1/2 right-4 md:right-0 transform -translate-y-1/2 z-10">
-            <button 
+            <button
               onClick={nextDonor}
               className="bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors"
             >
               <ChevronRight className="h-6 w-6 text-gray-600" />
             </button>
           </div>
-          
+
           <div className="flex justify-center mt-8">
             {donors.map((_, index) => (
               <button
@@ -183,7 +198,7 @@ const DonorHighlights = () => {
                   setActiveIndex(index);
                 }}
                 className={`h-2 w-2 rounded-full mx-1 transition-colors ${
-                  index === activeIndex ? 'bg-rose-600' : 'bg-gray-300'
+                  index === activeIndex ? "bg-rose-600" : "bg-gray-300"
                 }`}
               />
             ))}

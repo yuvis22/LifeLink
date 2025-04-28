@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   User,
   AlertCircle,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 const bloodCenters = [
   {
@@ -282,7 +284,7 @@ const SchedulePage = () => {
                     Select Date &amp; Time
                   </CardTitle>
                   <CardDescription>
-                    Choose when you'd like to donate
+                    Choose when you&apos;d like to donate
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -431,15 +433,17 @@ const SchedulePage = () => {
                         Selected Location
                       </h4>
                       <div className="flex">
-                        <div className="w-24 h-24 rounded-md overflow-hidden mr-4">
-                          <img
-                            src={
-                              bloodCenters.find((c) => c.id === selectedCenter)
-                                ?.image
-                            }
-                            alt="Donation center"
-                            className="w-full h-full object-cover"
-                          />
+                        <div className="w-24 h-24 rounded-md overflow-hidden mr-4 bg-gray-200 flex-shrink-0">
+                          <div
+                            className="w-full h-full bg-cover bg-center"
+                            style={{
+                              backgroundImage: `url(${
+                                bloodCenters.find(
+                                  (c) => c.id === selectedCenter
+                                )?.image || ""
+                              })`,
+                            }}
+                          ></div>
                         </div>
                         <div>
                           <p className="font-medium">
@@ -894,7 +898,7 @@ const SchedulePage = () => {
                     </li>
                     <li className="flex items-start">
                       <span className="text-rose-600 mr-2">•</span>
-                      Bring a valid photo ID and list of medications you're
+                      Bring a valid photo ID and list of medications you&apos;re
                       currently taking.
                     </li>
                     <li className="flex items-start">

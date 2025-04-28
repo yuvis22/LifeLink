@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Search,
   Filter,
@@ -61,7 +62,7 @@ const articles = [
     publishDate: "2025-04-15",
     readTime: "5 min read",
     image:
-      "https://images.pexels.com/photos/7656532/pexels-photo-7656532.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-42an9fU4ete0WZkRXjL5fGsVzh80ihYqqg&s",
     category: "Health",
     tags: ["health benefits", "heart health", "blood donation"],
   },
@@ -477,10 +478,11 @@ const ArticlesPage = () => {
                     className="overflow-hidden hover:shadow-md transition-shadow duration-300"
                   >
                     <div className="h-48 relative">
-                      <img
+                      <Image
                         src={article.image}
                         alt={article.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        fill
+                        className="object-cover transition-transform duration-500 hover:scale-105"
                       />
                       <div className="absolute top-3 left-3">
                         <Badge className="bg-rose-600 text-white hover:bg-rose-700">
@@ -531,8 +533,8 @@ const ArticlesPage = () => {
                   No articles found
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  We couldn't find any articles matching your search criteria.
-                  Try adjusting your filters or search term.
+                  We couldn&apos;t find any articles matching your search
+                  criteria. Try adjusting your filters or search term.
                 </p>
                 <Button
                   className="mt-4 bg-rose-600 hover:bg-rose-700 text-white"

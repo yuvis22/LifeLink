@@ -287,7 +287,8 @@ const FindDonorPage = () => {
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <p className="text-gray-600 mb-2">
-                    It's important to find donors with compatible blood types:
+                    It&apos;s important to find donors with compatible blood
+                    types:
                   </p>
                   <ul className="list-disc pl-5 text-gray-600 text-sm space-y-1">
                     <li>Type O- is the universal donor</li>
