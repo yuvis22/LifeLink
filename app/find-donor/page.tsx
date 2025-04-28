@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,6 +35,7 @@ import {
   Mail,
   User,
   Droplet,
+  LoaderCircle,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -42,104 +43,83 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-// Mock data for donors
-const mockDonors = [
-  {
-    id: 1,
-    name: "Robert Garcia",
-    image:
-      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
-    bloodType: "O-",
-    lastDonation: "2025-03-10",
-    location: "Downtown Medical Center",
-    distance: "2.3",
-    availability: "Weekdays, 9AM-5PM",
-    contactDetails: {
-      phone: "+1 (555) 123-4567",
-      email: "robert.g@example.com",
-    },
-    verified: true,
-    emergencyAvailable: true,
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    image:
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=600",
-    bloodType: "O+",
-    lastDonation: "2025-02-15",
-    location: "Northside Hospital",
-    distance: "4.7",
-    availability: "Weekends, 10AM-8PM",
-    contactDetails: {
-      phone: "+1 (555) 987-6543",
-      email: "sarah.j@example.com",
-    },
-    verified: true,
-    emergencyAvailable: false,
-  },
-  {
-    id: 3,
-    name: "Michael Chen",
-    image:
-      "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=600",
-    bloodType: "AB-",
-    lastDonation: "2025-01-20",
-    location: "Eastside Health Center",
-    distance: "1.5",
-    availability: "Evenings, 5PM-9PM",
-    contactDetails: {
-      phone: "+1 (555) 456-7890",
-      email: "michael.c@example.com",
-    },
-    verified: true,
-    emergencyAvailable: true,
-  },
-  {
-    id: 4,
-    name: "Jessica Williams",
-    image:
-      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600",
-    bloodType: "A+",
-    lastDonation: "2025-03-05",
-    location: "Central Blood Bank",
-    distance: "3.2",
-    availability: "Flexible",
-    contactDetails: {
-      phone: "+1 (555) 234-5678",
-      email: "jessica.w@example.com",
-    },
-    verified: true,
-    emergencyAvailable: true,
-  },
-  {
-    id: 5,
-    name: "Emily Wilson",
-    image:
-      "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=600",
-    bloodType: "B+",
-    lastDonation: "2025-02-28",
-    location: "Westside Medical Plaza",
-    distance: "5.1",
-    availability: "Weekends only",
-    contactDetails: {
-      phone: "+1 (555) 876-5432",
-      email: "emily.w@example.com",
-    },
-    verified: false,
-    emergencyAvailable: false,
-  },
-];
+interface Donor {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  bloodType: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  lastDonation?: string;
+  emergencyAvailable: boolean;
+  createdAt: string;
+}
 
 const FindDonorPage = () => {
   const [searchLocation, setSearchLocation] = useState("");
   const [bloodType, setBloodType] = useState("any-type");
   const [distance, setDistance] = useState("any-distance");
   const [emergencyOnly, setEmergencyOnly] = useState(false);
-  const [filteredDonors, setFilteredDonors] = useState(mockDonors);
+  const [donors, setDonors] = useState<Donor[]>([]);
+  const [filteredDonors, setFilteredDonors] = useState<Donor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [sortBy, setSortBy] = useState("recent");
+
+  useEffect(() => {
+    const fetchDonors = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/donors");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to fetch donors");
+        }
+
+        setDonors(data.donors);
+        setFilteredDonors(sortDonors(data.donors, sortBy));
+        console.log("Donors loaded from database:", data.donors);
+      } catch (error: any) {
+        console.error("Error fetching donors:", error);
+        setError(error.message || "An error occurred while fetching donors");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDonors();
+  }, [sortBy]);
+
+  // Sort donors based on selected criteria
+  const sortDonors = (donorList: Donor[], sortCriteria: string) => {
+    switch (sortCriteria) {
+      case "recent":
+        return [...donorList].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      case "availability":
+        return [...donorList].sort((a, b) => {
+          // Sort by emergency availability first
+          if (a.emergencyAvailable && !b.emergencyAvailable) return -1;
+          if (!a.emergencyAvailable && b.emergencyAvailable) return 1;
+
+          // Then by most recent
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        });
+      default:
+        return donorList;
+    }
+  };
 
   const handleSearch = () => {
-    let results = [...mockDonors];
+    let results = [...donors];
 
     if (bloodType && bloodType !== "any-type") {
       results = results.filter((donor) => donor.bloodType === bloodType);
@@ -149,21 +129,76 @@ const FindDonorPage = () => {
       results = results.filter((donor) => donor.emergencyAvailable);
     }
 
-    if (distance && distance !== "any-distance") {
-      const maxDistance = parseInt(distance);
-      results = results.filter(
-        (donor) => parseFloat(donor.distance) <= maxDistance
-      );
-    }
-
     if (searchLocation) {
       const searchTermLower = searchLocation.toLowerCase();
-      results = results.filter((donor) =>
-        donor.location.toLowerCase().includes(searchTermLower)
+      results = results.filter(
+        (donor) =>
+          donor.city.toLowerCase().includes(searchTermLower) ||
+          donor.state.toLowerCase().includes(searchTermLower) ||
+          donor.address.toLowerCase().includes(searchTermLower)
       );
     }
 
-    setFilteredDonors(results);
+    setFilteredDonors(sortDonors(results, sortBy));
+  };
+
+  const resetFilters = () => {
+    setSearchLocation("");
+    setBloodType("any-type");
+    setDistance("any-distance");
+    setEmergencyOnly(false);
+    setFilteredDonors(sortDonors(donors, sortBy));
+  };
+
+  // Handle sort change
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    setFilteredDonors(sortDonors(filteredDonors, value));
+  };
+
+  // Get donor's full name
+  const getDonorName = (donor: Donor) => {
+    return `${donor.firstName} ${donor.lastName}`;
+  };
+
+  // Get donor's initials for avatar fallback
+  const getDonorInitials = (donor: Donor) => {
+    return `${donor.firstName.charAt(0)}${donor.lastName.charAt(0)}`;
+  };
+
+  // Generate unique avatar URL based on donor's name and blood type
+  const getAvatarUrl = (donor: Donor) => {
+    const styles = ["initials", "personas", "bottts", "avataaars", "micah"];
+    // Use blood type as a factor to determine avatar style
+    const styleIndex = donor.bloodType.charCodeAt(0) % styles.length;
+    const style = styles[styleIndex];
+
+    // Create background color based on blood type
+    let bgColor = "FF597B";
+    if (donor.bloodType.includes("O")) {
+      bgColor = "FFC2D1"; // Light pink for O types
+    } else if (donor.bloodType.includes("A")) {
+      bgColor = "FF8AAE"; // Medium pink for A types
+    } else if (donor.bloodType.includes("B")) {
+      bgColor = "FF4D6D"; // Dark pink for B types
+    } else if (donor.bloodType.includes("AB")) {
+      bgColor = "C9184A"; // Deep red for AB types
+    }
+
+    if (style === "initials") {
+      return `https://api.dicebear.com/7.x/initials/svg?seed=${getDonorName(
+        donor
+      )}&backgroundColor=${bgColor}`;
+    } else {
+      return `https://api.dicebear.com/7.x/${style}/svg?seed=${donor._id}&backgroundColor=${bgColor}`;
+    }
+  };
+
+  // Format date for display
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "Never";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
   };
 
   return (
@@ -215,7 +250,7 @@ const FindDonorPage = () => {
                   <MapPin className="h-4 w-4 absolute top-3 left-3 text-gray-400" />
                   <Input
                     id="location"
-                    placeholder="City, hospital, or center"
+                    placeholder="City, state, or address"
                     value={searchLocation}
                     onChange={(e) => setSearchLocation(e.target.value)}
                     className="pl-10"
@@ -305,150 +340,170 @@ const FindDonorPage = () => {
         <div className="md:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-900">
-              {filteredDonors.length} Donors Available
+              {isLoading
+                ? "Loading..."
+                : `${filteredDonors.length} Donors Available`}
             </h2>
-            <Select defaultValue="distance">
+            <Select value={sortBy} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="distance">Nearest First</SelectItem>
-                <SelectItem value="recent">Recent Donors</SelectItem>
-                <SelectItem value="availability">Availability</SelectItem>
+                <SelectItem value="recent">Most Recent</SelectItem>
+                <SelectItem value="availability">
+                  Emergency Available
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-4">
-            {filteredDonors.length > 0 ? (
-              filteredDonors.map((donor) => (
-                <Card
-                  key={donor.id}
-                  className="hover:shadow-md transition-shadow duration-300"
-                >
-                  <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row">
-                      <div className="flex items-start md:w-1/3 mb-4 md:mb-0">
-                        <Avatar className="h-14 w-14 mr-4 border-2 border-gray-100">
-                          <AvatarImage src={donor.image} alt={donor.name} />
-                          <AvatarFallback>
-                            {donor.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="flex items-center">
-                            <h3 className="font-semibold text-lg text-gray-900">
-                              {donor.name}
-                            </h3>
-                            {donor.verified && (
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <LoaderCircle className="h-8 w-8 animate-spin text-rose-600" />
+              <span className="ml-2">Loading donors...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                <User className="h-8 w-8 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Error loading donors
+              </h3>
+              <p className="text-gray-600 max-w-md mx-auto">{error}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredDonors.length > 0 ? (
+                filteredDonors.map((donor) => (
+                  <Card
+                    key={donor._id}
+                    className="hover:shadow-md transition-shadow duration-300"
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row">
+                        <div className="flex items-start md:w-1/3 mb-4 md:mb-0">
+                          <Avatar className="h-14 w-14 mr-4 border-2 border-gray-100">
+                            <AvatarImage
+                              src={getAvatarUrl(donor)}
+                              alt={getDonorName(donor)}
+                            />
+                            <AvatarFallback>
+                              {getDonorInitials(donor)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="flex items-center">
+                              <h3 className="font-semibold text-lg text-gray-900">
+                                {getDonorName(donor)}
+                              </h3>
+                            </div>
+                            <div className="flex items-center mt-1 mb-2">
                               <Badge
-                                variant="secondary"
-                                className="ml-2 bg-green-50 text-green-700 border-green-200"
+                                className={cn(
+                                  "bg-rose-100 text-rose-700 border-rose-200",
+                                  donor.bloodType.includes("O-") &&
+                                    "bg-amber-100 text-amber-700 border-amber-200",
+                                  donor.bloodType.includes("AB") &&
+                                    "bg-purple-100 text-purple-700 border-purple-200",
+                                  donor.bloodType.includes("B") &&
+                                    !donor.bloodType.includes("A") &&
+                                    "bg-blue-100 text-blue-700 border-blue-200"
+                                )}
                               >
-                                Verified
+                                <Droplet className="h-3 w-3 mr-1 fill-current" />
+                                {donor.bloodType}
                               </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center mt-1 mb-2">
-                            <Badge
-                              className={cn(
-                                "bg-rose-100 text-rose-700 border-rose-200",
-                                donor.bloodType.includes("O-") &&
-                                  "bg-amber-100 text-amber-700 border-amber-200",
-                                donor.bloodType.includes("AB") &&
-                                  "bg-purple-100 text-purple-700 border-purple-200",
-                                donor.bloodType.includes("B") &&
-                                  !donor.bloodType.includes("A") &&
-                                  "bg-blue-100 text-blue-700 border-blue-200"
+                              {donor.emergencyAvailable && (
+                                <Badge
+                                  variant="outline"
+                                  className="ml-2 bg-rose-50 text-rose-700 border-rose-200"
+                                >
+                                  Emergency
+                                </Badge>
                               )}
-                            >
-                              <Droplet className="h-3 w-3 mr-1 fill-current" />
-                              {donor.bloodType}
-                            </Badge>
-                            {donor.emergencyAvailable && (
-                              <Badge
-                                variant="outline"
-                                className="ml-2 bg-rose-50 text-rose-700 border-rose-200"
-                              >
-                                Emergency
-                              </Badge>
-                            )}
+                            </div>
+                            <p className="text-sm text-gray-500 flex items-center">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              Last donation: {formatDate(donor.lastDonation)}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-500 flex items-center">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            Last donation:{" "}
-                            {new Date(donor.lastDonation).toLocaleDateString()}
-                          </p>
                         </div>
-                      </div>
 
-                      <div className="md:w-2/3 md:pl-6 md:border-l border-gray-100">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm text-gray-500 flex items-center">
-                              <MapPin className="h-3 w-3 mr-1" />
-                              Location
-                            </p>
-                            <p className="text-gray-700">{donor.location}</p>
-                            <p className="text-sm text-gray-600">
-                              {donor.distance} miles away
-                            </p>
-                          </div>
+                        <div className="md:w-2/3 md:pl-6 md:border-l border-gray-100">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500 flex items-center">
+                                <MapPin className="h-3 w-3 mr-1" />
+                                Location
+                              </p>
+                              <p className="text-gray-700">
+                                {donor.city}, {donor.state}
+                              </p>
+                              <p className="text-sm text-gray-600 truncate">
+                                {donor.address}
+                              </p>
+                            </div>
 
-                          <div>
-                            <p className="text-sm text-gray-500 flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              Availability
-                            </p>
-                            <p className="text-gray-700">
-                              {donor.availability}
-                            </p>
-                          </div>
-
-                          <div className="md:col-span-2 pt-2">
-                            <div className="flex flex-col sm:flex-row gap-3">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-gray-700 flex-1"
-                              >
-                                <Phone className="h-4 w-4 mr-2" />
+                            <div>
+                              <p className="text-sm text-gray-500 flex items-center">
+                                <Phone className="h-3 w-3 mr-1" />
                                 Contact
-                              </Button>
-                              <Button
-                                size="sm"
-                                className="bg-rose-600 hover:bg-rose-700 text-white flex-1"
-                              >
-                                <Heart className="h-4 w-4 mr-2" />
-                                Request Donation
-                              </Button>
+                              </p>
+                              <p className="text-gray-700">{donor.phone}</p>
+                            </div>
+
+                            <div className="md:col-span-2 pt-2">
+                              <div className="flex flex-col sm:flex-row gap-3">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-gray-700 flex-1"
+                                  onClick={() => {
+                                    window.location.href = `tel:${donor.phone}`;
+                                  }}
+                                >
+                                  <Phone className="h-4 w-4 mr-2" />
+                                  Contact
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="bg-rose-600 hover:bg-rose-700 text-white flex-1"
+                                >
+                                  <Heart className="h-4 w-4 mr-2" />
+                                  Request Donation
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                  <User className="h-8 w-8 text-gray-400" />
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                    <User className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No donors found
+                  </h3>
+                  <p className="text-gray-600 max-w-md mx-auto">
+                    No matching donors were found with your current filters. Try
+                    adjusting your search criteria or contact support for
+                    assistance.
+                  </p>
+                  <Button
+                    className="mt-4 bg-rose-600 hover:bg-rose-700 text-white"
+                    onClick={resetFilters}
+                  >
+                    Reset Filters
+                  </Button>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No donors found
-                </h3>
-                <p className="text-gray-600 max-w-md mx-auto">
-                  No matching donors were found with your current filters. Try
-                  adjusting your search criteria or contact support for
-                  assistance.
-                </p>
-                <Button className="mt-4 bg-rose-600 hover:bg-rose-700 text-white">
-                  Reset Filters
-                </Button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
