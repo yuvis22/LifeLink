@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -11,6 +13,7 @@ import {
   User,
   AlertCircle,
   Building2,
+  Router,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -49,6 +52,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { generateCalendarEvent, downloadCalendarFile } from "@/lib/calendar";
+import { ReminderDialog } from "@/components/reminder-dialog";
+import Link from "next/link";
 
 const bloodCenters = [
   {
@@ -105,6 +111,7 @@ const timeSlots = [
 ];
 
 const SchedulePage = () => {
+  const router = useRouter();
   const [selectedCenter, setSelectedCenter] = useState<number | null>(null);
   const [date, setDate] = useState<Date | undefined>();
   const [time, setTime] = useState<string | null>(null);
@@ -151,8 +158,63 @@ const SchedulePage = () => {
   };
 
   const handleSubmit = () => {
-    alert("Appointment scheduled successfully!");
+    toast.success("Appointment scheduled successfully!", {
+      description: "You'll receive a confirmation email shortly.",
+      duration: 3000,
+    });
     setStep(4);
+  };
+
+  const handleAddToCalendar = async () => {
+    if (!date || !time || !selectedCenter) return;
+
+    try {
+      // Parse the time string to get hours and minutes
+      const [hourStr, minuteStr, period] = time.split(/[:\s]/);
+      let hours = parseInt(hourStr);
+      const minutes = parseInt(minuteStr || "0");
+
+      // Convert to 24-hour format if needed
+      if (period === "PM" && hours < 12) hours += 12;
+      if (period === "AM" && hours === 12) hours = 0;
+
+      // Create a date object for the appointment time
+      const appointmentDate = new Date(date);
+      appointmentDate.setHours(hours, minutes, 0, 0);
+
+      // Set duration based on donation type
+      let durationHours = 1;
+      if (donationType === "platelets") durationHours = 2;
+
+      // Find the selected center
+      const center = bloodCenters.find((c) => c.id === selectedCenter);
+
+      // Generate and download the calendar file
+      const calendarContent = await generateCalendarEvent({
+        title: `Blood Donation Appointment (${
+          donationType === "whole-blood"
+            ? "Whole Blood"
+            : donationType === "platelets"
+            ? "Platelets"
+            : "Plasma"
+        })`,
+        description: `Blood donation appointment at ${center?.name}. Please arrive 15 minutes early and bring ID.`,
+        location: center?.address || "",
+        startTime: appointmentDate,
+        duration: { hours: durationHours, minutes: 0 },
+      });
+
+      downloadCalendarFile(calendarContent);
+
+      toast.success("Added to calendar", {
+        description: "Calendar file has been generated and downloaded.",
+      });
+    } catch (error) {
+      console.error("Error generating calendar event:", error);
+      toast.error("Couldn't generate calendar event", {
+        description: "There was an error creating your calendar file.",
+      });
+    }
   };
 
   return (
@@ -310,9 +372,8 @@ const SchedulePage = () => {
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
                           <Calendar
-                            mode="single"
                             selected={date}
-                            onSelect={setDate}
+                            onDateSelect={setDate}
                             disabled={(date) =>
                               date < new Date() ||
                               date >
@@ -1004,14 +1065,27 @@ const SchedulePage = () => {
               </div>
 
               <div className="flex justify-center gap-4">
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleAddToCalendar}>
                   <CalendarIcon className="h-4 w-4 mr-2" />
                   Add to Calendar
                 </Button>
-                <Button variant="outline">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Set Reminder
-                </Button>
+                {date && time ? (
+                  <ReminderDialog
+                    appointmentDate={date}
+                    appointmentTime={time}
+                    trigger={
+                      <Button variant="outline">
+                        <Clock className="h-4 w-4 mr-2" />
+                        Set Reminder
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <Button variant="outline" disabled>
+                    <Clock className="h-4 w-4 mr-2" />
+                    Set Reminder
+                  </Button>
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col items-center pb-10">
@@ -1020,8 +1094,15 @@ const SchedulePage = () => {
                 profile.
               </p>
               <div className="flex gap-4">
-                <Button variant="outline">View All Appointments</Button>
-                <Button className="bg-rose-600 hover:bg-rose-700 text-white">
+                <Button variant="outline" asChild>
+                  <Link href="/appointments">View All Appointments</Link>
+                </Button>
+                <Button
+                  onClick={() => {
+                    router.push("/");
+                  }}
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
+                >
                   Return to Home
                 </Button>
               </div>
