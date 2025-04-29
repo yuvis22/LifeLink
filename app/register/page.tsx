@@ -305,7 +305,6 @@ export default function RegisterPage() {
                               align="start"
                             >
                               <Calendar
-                                mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) =>
@@ -463,7 +462,6 @@ export default function RegisterPage() {
                               align="start"
                             >
                               <Calendar
-                                mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) => date > new Date()}
