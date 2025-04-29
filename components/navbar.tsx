@@ -1,24 +1,74 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Heart, Search, Calendar, FileText, User, Home } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import Link from "next/link";
+import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+
+import {
+  Menu,
+  X,
+  Heart,
+  Search,
+  Calendar,
+  FileText,
+  User,
+  Home,
+  LogOut,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isSignedIn, user } = useUser();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
-  const navItems = [
-    { name: 'Home', href: '/', icon: <Home className="h-4 w-4 mr-2" /> },
-    { name: 'Find Donor', href: '/find-donor', icon: <Search className="h-4 w-4 mr-2" /> },
-    { name: 'Schedule Donation', href: '/schedule', icon: <Calendar className="h-4 w-4 mr-2" /> },
-    { name: 'Articles', href: '/articles', icon: <FileText className="h-4 w-4 mr-2" /> },
-  ];
+  // Create navigation items with conditional profile item
+  const getNavItems = () => {
+    const baseItems = [
+      { name: "Home", href: "/", icon: <Home className="h-4 w-4 mr-2" /> },
+      {
+        name: "Find Donor",
+        href: "/find-donor",
+        icon: <Search className="h-4 w-4 mr-2" />,
+      },
+      {
+        name: "Schedule Donation",
+        href: "/schedule",
+        icon: <Calendar className="h-4 w-4 mr-2" />,
+      },
+      {
+        name: "Articles",
+        href: "/articles",
+        icon: <FileText className="h-4 w-4 mr-2" />,
+      },
+    ];
+
+    // Add profile link only if user is authenticated
+    if (isSignedIn) {
+      return [
+        ...baseItems.slice(0, 1), // Home
+        {
+          name: "Profile",
+          href: "/profile",
+          icon: <User className="h-4 w-4 mr-2" />,
+        },
+        {
+          name: "Become a Donor",
+          href: "/register",
+          icon: <Heart className="h-4 w-4 mr-2" />,
+        },
+        ...baseItems.slice(1), // Rest of the items
+      ];
+    }
+
+    return baseItems;
+  };
+
+  const navItems = getNavItems();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -45,10 +95,37 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" size="sm">Sign In</Button>
-          <Button size="sm" className="bg-rose-600 hover:bg-rose-700 text-white">
-            Register as Donor
-          </Button>
+          {isSignedIn ? (
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">
+                Hello, {user.firstName || user.username}
+              </span>
+              <UserButton
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    avatarBox: "h-8 w-8",
+                  },
+                }}
+              />
+            </div>
+          ) : (
+            <>
+              <SignInButton>
+                <Button variant="outline" size="sm">
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton>
+                <Button
+                  size="sm"
+                  className="bg-rose-600 hover:bg-rose-700 text-white"
+                >
+                  Register as Donor
+                </Button>
+              </SignUpButton>
+            </>
+          )}
         </div>
 
         {/* Mobile Navigation Toggle */}
@@ -60,10 +137,12 @@ const Navbar = () => {
         </button>
 
         {/* Mobile Navigation Menu */}
-        <div className={cn(
-          "fixed inset-0 top-16 z-50 bg-background md:hidden transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "translate-x-full"
-        )}>
+        <div
+          className={cn(
+            "fixed inset-0 top-16 z-50 bg-background md:hidden transition-transform duration-300 ease-in-out",
+            isOpen ? "translate-x-0" : "translate-x-full"
+          )}
+        >
           <nav className="flex flex-col p-6 space-y-4">
             {navItems.map((item) => (
               <Link
@@ -76,12 +155,43 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <div className="pt-4 flex flex-col space-y-3">
-              <Button variant="outline" onClick={() => setIsOpen(false)}>Sign In</Button>
-              <Button className="bg-rose-600 hover:bg-rose-700 text-white" onClick={() => setIsOpen(false)}>
-                Register as Donor
-              </Button>
-            </div>
+
+            {isSignedIn ? (
+              <div className="pt-4 flex flex-col space-y-3">
+                <div className="flex items-center gap-3 py-3">
+                  <UserButton afterSignOutUrl="/" />
+                  <span className="text-sm font-medium">
+                    {user.firstName || user.username}
+                  </span>
+                </div>
+                <Link href="/profile" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full justify-start">
+                    <User className="h-4 w-4 mr-2" />
+                    My Profile
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="pt-4 flex flex-col space-y-3">
+                <SignInButton>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full"
+                  >
+                    Sign In
+                  </Button>
+                </SignInButton>
+                <SignUpButton>
+                  <Button
+                    className="bg-rose-600 hover:bg-rose-700 text-white w-full"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Register as Donor
+                  </Button>
+                </SignUpButton>
+              </div>
+            )}
           </nav>
         </div>
       </div>
