@@ -39,7 +39,7 @@ import { motion } from "framer-motion";
 export default function ProfilePage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [activeTab, setActiveTab] = useState("overview");
-  const searchParams = useSearchParams();
+  const searchParams = useSearchParams() || new URLSearchParams();
   const registered = searchParams.get("registered");
   const [showSuccess, setShowSuccess] = useState(false);
 
