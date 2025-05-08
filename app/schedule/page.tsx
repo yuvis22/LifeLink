@@ -130,6 +130,7 @@ const SchedulePage = () => {
       recentTravel: false,
     },
   });
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleNextStep = () => {
     setStep(step + 1);
@@ -157,12 +158,76 @@ const SchedulePage = () => {
     });
   };
 
-  const handleSubmit = () => {
-    toast.success("Appointment scheduled successfully!", {
-      description: "You'll receive a confirmation email shortly.",
-      duration: 3000,
-    });
-    setStep(4);
+  const handleSubmit = async () => {
+    try {
+      console.log("Starting appointment submission...");
+
+      if (!date || !time || !selectedCenter) {
+        console.log("Missing required fields:", { date, time, selectedCenter });
+        toast.error("Missing required information");
+        return;
+      }
+
+      if (!termsAccepted) {
+        console.log("Terms not accepted");
+        toast.error("Please accept the terms and conditions");
+        return;
+      }
+
+      const selectedCenterData = bloodCenters.find(
+        (c) => c.id === selectedCenter
+      );
+      if (!selectedCenterData) {
+        console.log("Selected center not found:", selectedCenter);
+        toast.error("Selected center not found");
+        return;
+      }
+
+      const appointmentData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        bloodType: formData.bloodType,
+        previousDonor: formData.previousDonor,
+        appointmentDate: date,
+        appointmentTime: time,
+        donationType: donationType,
+        centerId: selectedCenter,
+        centerName: selectedCenterData.name,
+        centerAddress: selectedCenterData.address,
+        questions: formData.questions,
+      };
+
+      console.log("Sending appointment data:", appointmentData);
+
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(appointmentData),
+      });
+
+      console.log("Response status:", response.status);
+      const data = await response.json();
+      console.log("Response data:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create appointment");
+      }
+
+      toast.success("Appointment scheduled successfully!", {
+        description: "You'll receive a confirmation email shortly.",
+        duration: 3000,
+      });
+      setStep(4);
+    } catch (error: any) {
+      console.error("Error scheduling appointment:", error);
+      toast.error("Failed to schedule appointment", {
+        description: error.message || "Please try again later.",
+      });
+    }
   };
 
   const handleAddToCalendar = async () => {
@@ -976,7 +1041,16 @@ const SchedulePage = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <Checkbox id="terms" className="mt-1" />
+                  <Checkbox
+                    id="terms"
+                    className="mt-1"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => {
+                      if (typeof checked === "boolean") {
+                        setTermsAccepted(checked);
+                      }
+                    }}
+                  />
                   <label htmlFor="terms" className="ml-3 text-sm text-gray-600">
                     I confirm that the information provided is accurate. I
                     understand that I will undergo a health screening at the

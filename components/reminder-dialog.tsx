@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock, Bell } from "lucide-react";
 import { format } from "date-fns";
 
 import {
@@ -89,18 +89,18 @@ export function ReminderDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline">
-            <Clock className="h-4 w-4 mr-2" />
+          <Button variant="outline" className="w-full">
+            <Bell className="mr-2 h-4 w-4" />
             Set Reminder
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Set Appointment Reminder</DialogTitle>
+          <DialogTitle>Set Donation Reminder</DialogTitle>
           <DialogDescription>
-            Choose when and how you'd like to be reminded of your upcoming
-            appointment.
+            We&apos;ll send you a reminder when it&apos;s time for your next
+            donation. You can donate again after 56 days.
           </DialogDescription>
         </DialogHeader>
 

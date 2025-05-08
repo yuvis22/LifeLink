@@ -103,9 +103,9 @@ export default function BloodTypeGuidePage() {
               <div className="flex-1">
                 <p className="mb-4">
                   The Rh factor is an inherited protein found on the surface of
-                  red blood cells. If your blood has the protein, you're Rh
-                  positive (Rh+). If your blood lacks the protein, you're Rh
-                  negative (Rh-).
+                  red blood cells. If your blood has the protein, you&apos;re Rh
+                  positive (Rh+). If your blood lacks the protein, you&apos;re
+                  Rh negative (Rh-).
                 </p>
                 <p>
                   This creates eight possible blood types: A+, A-, B+, B-, AB+,
