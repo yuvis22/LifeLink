@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "FAQs | LifeLink",
@@ -461,6 +462,45 @@ export default function FAQsPage() {
           </div>
         </div>
       </div>
+      <Card className="mb-10 border-none shadow-lg overflow-hidden">
+        <CardHeader className="bg-gray-800 text-white">
+          <CardTitle className="text-2xl">Frequently Asked Questions</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">
+                How often can I donate blood?
+              </h3>
+              <p>
+                You can donate whole blood every 56 days. That&apos;s about
+                every two months. Platelet donations can be made more
+                frequently.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">
+                Does it hurt to donate blood?
+              </h3>
+              <p>
+                Most donors feel only a brief pinch when the needle is inserted.
+                The actual donation process is painless and takes about 8-10
+                minutes.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">
+                How long does it take to recover?
+              </h3>
+              <p>
+                Most people feel fine after donating. It&apos;s recommended to
+                rest for 10-15 minutes after donation and avoid heavy lifting
+                for 24 hours.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </main>
   );
 }

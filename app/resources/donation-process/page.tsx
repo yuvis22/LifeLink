@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Donation Process | LifeLink",
@@ -19,6 +20,29 @@ export default function DonationProcessPage() {
           from start to finish. This guide walks you through each step of the
           donation process so you know exactly what to expect.
         </p>
+
+        <Card className="mb-10 border-none shadow-lg overflow-hidden">
+          <CardHeader className="bg-gray-800 text-white">
+            <CardTitle className="text-2xl">Before Your Donation</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <p>
+                Here&apos;s what you need to do to prepare for your blood
+                donation:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Get a good night&apos;s sleep</li>
+                <li>Eat a healthy meal before donating</li>
+                <li>Drink plenty of water</li>
+                <li>Bring a valid ID</li>
+                <li>
+                  Wear comfortable clothing with sleeves that can be rolled up
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div className="bg-white p-6 rounded-lg shadow-md">

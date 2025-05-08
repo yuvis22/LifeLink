@@ -34,6 +34,35 @@ export default function DonationEligibilityPage() {
           </p>
         </div>
 
+        <Card className="mb-10 border-none shadow-lg overflow-hidden">
+          <CardHeader className="bg-gray-800 text-white">
+            <CardTitle className="text-2xl">General Requirements</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <p>
+                To donate blood, you must be in good health and meet these basic
+                requirements:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>
+                  Be at least 17 years old (16 with parental consent in some
+                  states)
+                </li>
+                <li>Weigh at least 110 pounds (50 kg)</li>
+                <li>Be in good general health</li>
+                <li>Not have donated blood in the last 56 days</li>
+                <li>Not have any active infections or illnesses</li>
+              </ul>
+              <p className="mt-4">
+                If you&apos;re unsure about your eligibility, please consult
+                with your healthcare provider or contact us for more
+                information.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="mb-10 overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-rose-500 to-rose-600 text-white">
             <CardTitle className="text-2xl">
