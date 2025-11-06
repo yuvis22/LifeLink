@@ -15,6 +15,7 @@ import {
   User,
   Home,
   LogOut,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,11 @@ const Navbar = () => {
         name: "Schedule Donation",
         href: "/schedule",
         icon: <Calendar className="h-4 w-4 mr-2" />,
+      },
+      {
+        name: "Requested Donations",
+        href: "/requested-donations",
+        icon: <ClipboardList className="h-4 w-4 mr-2" />,
       },
       {
         name: "Articles",
