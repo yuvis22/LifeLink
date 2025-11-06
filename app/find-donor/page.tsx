@@ -42,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Donor {
   _id: string;
@@ -53,6 +54,7 @@ interface Donor {
   address: string;
   city: string;
   state: string;
+  zipCode: string;
   lastDonation?: string;
   emergencyAvailable: boolean;
   createdAt: string;
@@ -135,9 +137,15 @@ const FindDonorPage = () => {
         (donor) =>
           donor.city.toLowerCase().includes(searchTermLower) ||
           donor.state.toLowerCase().includes(searchTermLower) ||
-          donor.address.toLowerCase().includes(searchTermLower)
+          donor.address.toLowerCase().includes(searchTermLower) ||
+          (donor.zipCode &&
+            donor.zipCode.toLowerCase().includes(searchTermLower))
       );
     }
+
+    // TODO: Distance filter not implemented - would require geocoding API
+    // (e.g., Google Maps Geocoding) to convert addresses to lat/lng coordinates
+    // and calculate distances using Haversine formula or similar
 
     setFilteredDonors(sortDonors(results, sortBy));
   };
@@ -469,9 +477,14 @@ const FindDonorPage = () => {
                                 <Button
                                   size="sm"
                                   className="bg-rose-600 hover:bg-rose-700 text-white flex-1"
+                                  asChild
                                 >
-                                  <Heart className="h-4 w-4 mr-2" />
-                                  Request Donation
+                                  <Link
+                                    href={`/request-donation?donorId=${donor._id}`}
+                                  >
+                                    <Heart className="h-4 w-4 mr-2" />
+                                    Request Donation
+                                  </Link>
                                 </Button>
                               </div>
                             </div>
